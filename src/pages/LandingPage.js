@@ -41,6 +41,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import VehicleList from "./VehicleList";
 
 // AI-generated color palette (travel-inspired)
 const colors = {
@@ -60,8 +61,19 @@ const LandingPage = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  // NEW: Travel mode state
+  const [travelMode, setTravelMode] = useState("flight"); // 'flight' | 'train' | 'bus'
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  // UPDATED: Search now routes based on travelMode
+  const handleSearch = () => {
+    if (travelMode === "flight") navigate("/flights");
+    else if (travelMode === "train") navigate("/trains");
+    else if (travelMode === "bus") navigate("/buses");
+    else navigate("/search");
   };
 
   const handleMenuClose = () => {
@@ -99,19 +111,19 @@ const LandingPage = () => {
       name: "Paris, France",
       description: "The city of love and lights",
       image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80",
-      tags: ["Romantic", "Historical", "Food"]
+      tags: ["Romantic", "Historical", "Food"],
     },
     {
       name: "Tokyo, Japan",
       description: "Where tradition meets innovation",
       image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80",
-      tags: ["Cultural", "Modern", "Shopping"]
+      tags: ["Cultural", "Modern", "Shopping"],
     },
     {
       name: "Bali, Indonesia",
       description: "Tropical paradise with stunning beaches",
       image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80",
-      tags: ["Beach", "Relaxing", "Adventure"]
+      tags: ["Beach", "Relaxing", "Adventure"],
     },
   ];
 
@@ -131,7 +143,6 @@ const LandingPage = () => {
       name: "Buses",
       action: () => navigate("/buses"),
     },
-    
   ];
 
   const deals = [
@@ -140,48 +151,65 @@ const LandingPage = () => {
     { title: "Family Package", discount: "Kids Travel Free", code: "FAMILY" },
   ];
 
+  // Helper: icon for current mode in the select's adornment
+  const modeAdornmentIcon =
+    travelMode === "flight" ? (
+      <FlightIcon color="primary" />
+    ) : travelMode === "train" ? (
+      <TrainIcon color="primary" />
+    ) : (
+      <DirectionsBusIcon color="primary" />
+    );
+
   return (
-    <Box sx={{ backgroundColor: colors.background, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        backgroundColor: colors.background,
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Modern App Bar */}
       <AppBar
         position="sticky"
         elevation={0}
-        sx={{ 
-          backgroundColor: "rgba(255,255,255,0.95)", 
+        sx={{
+          backgroundColor: "rgba(255,255,255,0.95)",
           backdropFilter: "blur(10px)",
           borderBottom: `1px solid ${colors.primary}20`,
-          py: 1
+          py: 1,
         }}
       >
         <Container maxWidth="lg">
           <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
             <Typography
               variant="h4"
-              sx={{ 
-                fontWeight: 800, 
+              sx={{
+                fontWeight: 800,
                 background: `linear-gradient(135deg, ${colors.primary}, ${colors.light})`,
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                letterSpacing: "-0.5px"
+                letterSpacing: "-0.5px",
               }}
             >
               MakeMyRoute
             </Typography>
-            
+
             <Box>
               <IconButton
                 onClick={handleProfileMenuOpen}
                 size="small"
                 sx={{ ml: 2 }}
-                aria-controls={open ? 'account-menu' : undefined}
+                aria-controls={open ? "account-menu" : undefined}
                 aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
+                aria-expanded={open ? "true" : undefined}
               >
                 <Avatar sx={{ bgcolor: colors.primary }}>
                   <PersonIcon />
                 </Avatar>
               </IconButton>
-              
+
               <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
@@ -191,31 +219,31 @@ const LandingPage = () => {
                 PaperProps={{
                   elevation: 0,
                   sx: {
-                    overflow: 'visible',
-                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.1))',
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.1))",
                     mt: 1.5,
-                    '& .MuiAvatar-root': {
+                    "& .MuiAvatar-root": {
                       width: 32,
                       height: 32,
                       ml: -0.5,
                       mr: 1,
                     },
-                    '&:before': {
+                    "&:before": {
                       content: '""',
-                      display: 'block',
-                      position: 'absolute',
+                      display: "block",
+                      position: "absolute",
                       top: 0,
                       right: 14,
                       width: 10,
                       height: 10,
-                      bgcolor: 'background.paper',
-                      transform: 'translateY(-50%) rotate(45deg)',
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
                       zIndex: 0,
                     },
                   },
                 }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
                 {isLoggedIn ? (
                   <>
@@ -283,29 +311,29 @@ const LandingPage = () => {
               backgroundPosition: "center",
               opacity: 0.15,
               zIndex: 0,
-            }
+            },
           }}
         >
           <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-            <Typography 
-              variant="h2" 
-              fontWeight={800} 
+            <Typography
+              variant="h2"
+              fontWeight={800}
               gutterBottom
-              sx={{ 
+              sx={{
                 textShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                letterSpacing: "-0.5px"
+                letterSpacing: "-0.5px",
               }}
             >
               Travel Smarter, Not Harder
             </Typography>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                mb: 4, 
+            <Typography
+              variant="h5"
+              sx={{
+                mb: 4,
                 fontWeight: 300,
                 maxWidth: "600px",
                 mx: "auto",
-                textShadow: "0 1px 2px rgba(0,0,0,0.2)"
+                textShadow: "0 1px 2px rgba(0,0,0,0.2)",
               }}
             >
               Find the best routes, compare prices, and book with confidence
@@ -322,10 +350,11 @@ const LandingPage = () => {
                   backdropFilter: "blur(4px)",
                   border: "1px solid rgba(255,255,255,0.3)",
                   maxWidth: 800,
-                  width: "100%"
+                  width: "100%",
                 }}
               >
                 <Grid container spacing={2} alignItems="center">
+                  {/* From City */}
                   <Grid item xs={12} md={3}>
                     <TextField
                       fullWidth
@@ -341,10 +370,12 @@ const LandingPage = () => {
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           borderRadius: 2,
-                        }
+                        },
                       }}
                     />
                   </Grid>
+
+                  {/* To City */}
                   <Grid item xs={12} md={3}>
                     <TextField
                       fullWidth
@@ -360,10 +391,12 @@ const LandingPage = () => {
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           borderRadius: 2,
-                        }
+                        },
                       }}
                     />
                   </Grid>
+
+                  {/* Date */}
                   <Grid item xs={12} md={2}>
                     <TextField
                       fullWidth
@@ -379,30 +412,44 @@ const LandingPage = () => {
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           borderRadius: 2,
-                        }
+                        },
                       }}
                     />
                   </Grid>
+
+                  {/* Travel Mode Select */}
                   <Grid item xs={12} md={2}>
                     <TextField
+                      select
                       fullWidth
-                      placeholder="Passengers"
-                      defaultValue="1 Adult"
+                      label="Mode"
+                      value={travelMode}
+                      onChange={(e) => setTravelMode(e.target.value)}
+                      variant="outlined"
                       InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">
-                            <PeopleIcon color="primary" />
-                          </InputAdornment>
+                          <InputAdornment position="start">{modeAdornmentIcon}</InputAdornment>
                         ),
                       }}
-                      variant="outlined"
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           borderRadius: 2,
-                        }
+                        },
                       }}
-                    />
+                    >
+                      <MenuItem value="flight">
+                        <FlightIcon sx={{ mr: 1 }} /> Flight
+                      </MenuItem>
+                      <MenuItem value="train">
+                        <TrainIcon sx={{ mr: 1 }} /> Train
+                      </MenuItem>
+                      <MenuItem value="bus">
+                        <DirectionsBusIcon sx={{ mr: 1 }} /> Bus
+                      </MenuItem>
+                    </TextField>
                   </Grid>
+
+                  {/* Search Button */}
                   <Grid item xs={12} md={2}>
                     <Button
                       fullWidth
@@ -418,10 +465,10 @@ const LandingPage = () => {
                         backgroundColor: colors.secondary,
                         "&:hover": {
                           backgroundColor: "#e65c00",
-                          boxShadow: `0 4px 12px ${colors.secondary}50`
-                        }
+                          boxShadow: `0 4px 12px ${colors.secondary}50`,
+                        },
                       }}
-                      onClick={() => navigate("/search")}
+                      onClick={handleSearch}
                     >
                       Search
                     </Button>
@@ -429,21 +476,21 @@ const LandingPage = () => {
                 </Grid>
               </Card>
             </Box>
-            
+
             {/* Quick Filters - Centered */}
             <Box sx={{ mt: 3, display: "flex", justifyContent: "center", gap: 2 }}>
               {["Round Trip", "One Way", "Multi-City"].map((option) => (
-                <Chip 
+                <Chip
                   key={option}
-                  label={option} 
-                  sx={{ 
-                    backgroundColor: "rgba(255,255,255,0.2)", 
+                  label={option}
+                  sx={{
+                    backgroundColor: "rgba(255,255,255,0.2)",
                     color: "white",
                     fontWeight: 500,
                     "&:hover": {
-                      backgroundColor: "rgba(255,255,255,0.3)"
-                    }
-                  }} 
+                      backgroundColor: "rgba(255,255,255,0.3)",
+                    },
+                  }}
                 />
               ))}
             </Box>
@@ -452,21 +499,13 @@ const LandingPage = () => {
 
         {/* Travel Options - Centered */}
         <Container sx={{ py: 8, textAlign: "center" }}>
-          <Typography
-            variant="h4"
-            fontWeight={700}
-            gutterBottom
-            sx={{ color: colors.textDark }}
-          >
+          <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: colors.textDark }}>
             Your Journey, Your Choice
           </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{ color: colors.textDark, mb: 4, maxWidth: "600px", mx: "auto" }}
-          >
+          <Typography variant="subtitle1" sx={{ color: colors.textDark, mb: 4, maxWidth: "600px", mx: "auto" }}>
             Flexible travel options for every type of traveler
           </Typography>
-          
+
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Grid container spacing={3} sx={{ maxWidth: 1200 }}>
               {travelOptions.map((option, index) => (
@@ -504,28 +543,23 @@ const LandingPage = () => {
         <Box sx={{ py: 6, backgroundColor: "white" }}>
           <Container sx={{ textAlign: "center" }}>
             <Box sx={{ mb: 4 }}>
-              <Chip 
-                label="Limited Time Offers" 
-                color="primary" 
-                sx={{ 
-                  backgroundColor: `${colors.secondary}15`, 
+              <Chip
+                label="Limited Time Offers"
+                color="primary"
+                sx={{
+                  backgroundColor: `${colors.secondary}15`,
                   color: colors.secondary,
                   fontWeight: 700,
                   fontSize: "0.9rem",
                   px: 2,
-                  py: 1
-                }} 
+                  py: 1,
+                }}
               />
-              <Typography
-                variant="h4"
-                fontWeight={700}
-                gutterBottom
-                sx={{ color: colors.textDark, mt: 2 }}
-              >
+              <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: colors.textDark, mt: 2 }}>
                 Exclusive Travel Deals
               </Typography>
             </Box>
-            
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Grid container spacing={3} sx={{ maxWidth: 1200 }}>
                 {deals.map((deal, index) => (
@@ -566,7 +600,7 @@ const LandingPage = () => {
                             px: 4,
                             "&:hover": {
                               backgroundColor: "#e65c00",
-                            }
+                            },
                           }}
                         >
                           Book Now
@@ -583,21 +617,13 @@ const LandingPage = () => {
         {/* Featured Destinations - Centered */}
         <Box sx={{ py: 8, backgroundColor: colors.background }}>
           <Container sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h4"
-              fontWeight={700}
-              gutterBottom
-              sx={{ color: colors.textDark }}
-            >
+            <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: colors.textDark }}>
               Trending Destinations
             </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: colors.textDark, mb: 6, maxWidth: "600px", mx: "auto" }}
-            >
+            <Typography variant="subtitle1" sx={{ color: colors.textDark, mb: 6, maxWidth: "600px", mx: "auto" }}>
               Discover the most popular destinations this season
             </Typography>
-            
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Grid container spacing={4} sx={{ maxWidth: 1200 }}>
                 {featuredDestinations.map((destination, index) => (
@@ -614,12 +640,7 @@ const LandingPage = () => {
                         },
                       }}
                     >
-                      <CardMedia
-                        component="img"
-                        height="240"
-                        image={destination.image}
-                        alt={destination.name}
-                      />
+                      <CardMedia component="img" height="240" image={destination.image} alt={destination.name} />
                       <CardContent sx={{ p: 3 }}>
                         <Typography variant="h6" fontWeight={700} sx={{ color: colors.textDark }}>
                           {destination.name}
@@ -629,36 +650,36 @@ const LandingPage = () => {
                         </Typography>
                         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 2 }}>
                           {destination.tags.map((tag, idx) => (
-                            <Chip 
-                              key={idx} 
-                              label={tag} 
-                              size="small" 
-                              sx={{ 
-                                backgroundColor: `${colors.light}15`, 
+                            <Chip
+                              key={idx}
+                              label={tag}
+                              size="small"
+                              sx={{
+                                backgroundColor: `${colors.light}15`,
                                 color: colors.light,
-                                fontWeight: 500
-                              }} 
+                                fontWeight: 500,
+                              }}
                             />
                           ))}
                         </Box>
                       </CardContent>
                       <CardActions sx={{ px: 3, pb: 3 }}>
-                        <Button 
-                          size="medium" 
+                        <Button
+                          size="medium"
                           variant="contained"
                           sx={{
                             backgroundColor: colors.primary,
                             fontWeight: 600,
                             borderRadius: 2,
                             px: 3,
-                            "&:hover": { backgroundColor: "#0b3d91" }
+                            "&:hover": { backgroundColor: "#0b3d91" },
                           }}
                           onClick={() => navigate("/search")}
                         >
                           Book Now
                         </Button>
-                        <Button 
-                          size="medium" 
+                        <Button
+                          size="medium"
                           variant="outlined"
                           sx={{
                             borderColor: colors.primary,
@@ -666,10 +687,10 @@ const LandingPage = () => {
                             fontWeight: 600,
                             borderRadius: 2,
                             px: 3,
-                            "&:hover": { 
-                              backgroundColor: `${colors.primary}10`, 
-                              borderColor: colors.primary 
-                            }
+                            "&:hover": {
+                              backgroundColor: `${colors.primary}10`,
+                              borderColor: colors.primary,
+                            },
                           }}
                         >
                           Explore
@@ -687,45 +708,37 @@ const LandingPage = () => {
         <Box sx={{ py: 8, backgroundColor: "white" }}>
           <Container>
             <Box sx={{ textAlign: "center", mb: 6 }}>
-              <Typography
-                variant="h4"
-                fontWeight={700}
-                gutterBottom
-                sx={{ color: colors.textDark }}
-              >
+              <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: colors.textDark }}>
                 Why Choose MakeMyRoute?
               </Typography>
               <Typography variant="body1" sx={{ color: colors.textDark, maxWidth: 800, mx: "auto" }}>
-                We're revolutionizing travel planning with innovative technology and 
-                customer-centric services.
+                We're revolutionizing travel planning with innovative technology and customer-centric services.
               </Typography>
             </Box>
-            
+
             <Grid container spacing={6} alignItems="center" justifyContent="center">
               <Grid item xs={12} md={6} sx={{ maxWidth: 600 }}>
                 <Grid container spacing={3} sx={{ mt: 4 }}>
                   {[
-                    { 
+                    {
                       icon: <ShieldIcon fontSize="large" sx={{ color: colors.primary }} />,
                       title: "Secure Booking",
-                      desc: "Your data and payments are protected with bank-level security"
+                      desc: "Your data and payments are protected with bank-level security",
                     },
-                    { 
+                    {
                       icon: <SupportAgentIcon fontSize="large" sx={{ color: colors.primary }} />,
                       title: "24/7 Support",
-                      desc: "Our travel experts are available anytime you need assistance"
+                      desc: "Our travel experts are available anytime you need assistance",
                     },
-                    { 
+                    {
                       icon: <LocalOfferIcon fontSize="large" sx={{ color: colors.primary }} />,
                       title: "Best Price Guarantee",
-                      desc: "Find a lower price? We'll match it and give you extra credit"
-                    }
+                      desc: "Find a lower price? We'll match it and give you extra credit",
+                    },
                   ].map((item, index) => (
                     <Grid item xs={12} key={index}>
                       <Box sx={{ display: "flex", gap: 3 }}>
-                        <Box sx={{ flexShrink: 0 }}>
-                          {item.icon}
-                        </Box>
+                        <Box sx={{ flexShrink: 0 }}>{item.icon}</Box>
                         <Box sx={{ textAlign: "left" }}>
                           <Typography variant="h6" fontWeight={600} sx={{ color: colors.textDark }}>
                             {item.title}
@@ -739,17 +752,19 @@ const LandingPage = () => {
                   ))}
                 </Grid>
               </Grid>
-              
+
               <Grid item xs={12} md={6} sx={{ maxWidth: 600 }}>
-                <Box sx={{ 
-                  borderRadius: 4, 
-                  overflow: "hidden",
-                  boxShadow: "0 16px 40px rgba(0,0,0,0.1)",
-                  height: "400px",
-                  backgroundImage: `url("https://images.unsplash.com/photo-1551632811-561732d1e306?q=80")`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center"
-                }} />
+                <Box
+                  sx={{
+                    borderRadius: 4,
+                    overflow: "hidden",
+                    boxShadow: "0 16px 40px rgba(0,0,0,0.1)",
+                    height: "400px",
+                    backgroundImage: `url("https://images.unsplash.com/photo-1551632811-561732d1e306?q=80")`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
               </Grid>
             </Grid>
           </Container>
@@ -757,13 +772,7 @@ const LandingPage = () => {
       </Box>
 
       {/* Footer */}
-      <Box
-        sx={{
-          backgroundColor: colors.textDark,
-          color: colors.textLight,
-          py: 6,
-        }}
-      >
+      <Box sx={{ backgroundColor: colors.textDark, color: colors.textLight, py: 6 }}>
         <Container>
           <Grid container spacing={4} justifyContent="center">
             <Grid item xs={12} md={4} sx={{ maxWidth: 400 }}>
@@ -785,7 +794,7 @@ const LandingPage = () => {
                 </Button>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} md={2} sx={{ maxWidth: 200 }}>
               <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
                 Company
@@ -796,7 +805,7 @@ const LandingPage = () => {
                 </Typography>
               ))}
             </Grid>
-            
+
             <Grid item xs={12} md={3} sx={{ maxWidth: 300 }}>
               <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
                 Support
@@ -807,7 +816,7 @@ const LandingPage = () => {
                 </Typography>
               ))}
             </Grid>
-            
+
             <Grid item xs={12} md={3} sx={{ maxWidth: 300 }}>
               <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
                 Download App
@@ -822,7 +831,7 @@ const LandingPage = () => {
               </Box>
             </Grid>
           </Grid>
-          
+
           <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.1)", mt: 4, pt: 4, textAlign: "center" }}>
             <Typography variant="body2" sx={{ opacity: 0.7 }}>
               © {new Date().getFullYear()} MakeMyRoute Technologies Pvt. Ltd. All Rights Reserved.
